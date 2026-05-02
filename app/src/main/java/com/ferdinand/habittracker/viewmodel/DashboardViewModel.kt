@@ -61,9 +61,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun increaseProgress(habit: Habit) {
         val selectedHabit = habits.find { it.id == habit.id }
 
-        if (selectedHabit != null && selectedHabit.currentProgress < selectedHabit.goal) {
-            selectedHabit.currentProgress += 1
-            saveHabitsToFile()
+        if (selectedHabit != null) {
+            if (selectedHabit.currentProgress < selectedHabit.goal) {
+                selectedHabit.currentProgress += 1
+                saveHabitsToFile()
+            }
         }
 
         habitsLD.value = ArrayList(habits)
@@ -72,9 +74,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun decreaseProgress(habit: Habit) {
         val selectedHabit = habits.find { it.id == habit.id }
 
-        if (selectedHabit != null && selectedHabit.currentProgress > 0) {
-            selectedHabit.currentProgress -= 1
-            saveHabitsToFile()
+        if (selectedHabit != null) {
+            if (selectedHabit.currentProgress > 0) {
+                selectedHabit.currentProgress -= 1
+                saveHabitsToFile()
+            }
         }
 
         habitsLD.value = ArrayList(habits)

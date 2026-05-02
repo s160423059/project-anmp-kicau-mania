@@ -21,6 +21,7 @@ class HabitAdapter(
             parent,
             false
         )
+
         return HabitViewHolder(binding)
     }
 
@@ -35,11 +36,19 @@ class HabitAdapter(
         holder.binding.txtDescription.text = habit.description
         holder.binding.txtStatus.text = habit.getStatusText()
         holder.binding.txtProgressText.text = habit.getProgressText()
-
         holder.binding.txtIcon.text = getIconText(habit.iconName)
 
         holder.binding.progressHabit.max = habit.goal
         holder.binding.progressHabit.progress = habit.currentProgress
+
+        val canIncrease = habit.currentProgress < habit.goal
+        val canDecrease = habit.currentProgress > 0
+
+        holder.binding.btnPlus.isEnabled = canIncrease
+        holder.binding.btnMinus.isEnabled = canDecrease
+
+        holder.binding.btnPlus.alpha = if (canIncrease) 1.0f else 0.4f
+        holder.binding.btnMinus.alpha = if (canDecrease) 1.0f else 0.4f
 
         holder.binding.btnPlus.setOnClickListener {
             onPlusClick(habit)

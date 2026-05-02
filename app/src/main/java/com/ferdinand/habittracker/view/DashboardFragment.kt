@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ferdinand.habittracker.databinding.FragmentDashboardBinding
 import com.ferdinand.habittracker.viewmodel.DashboardViewModel
 
@@ -13,6 +14,15 @@ class DashboardFragment : Fragment() {
 
     private lateinit var binding: FragmentDashboardBinding
     private lateinit var viewModel: DashboardViewModel
+    private val habitAdapter = HabitAdapter(
+        arrayListOf(),
+        onPlusClick = { habit ->
+            viewModel.increaseProgress(habit)
+        },
+        onMinusClick = { habit ->
+            viewModel.decreaseProgress(habit)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +38,9 @@ class DashboardFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(DashboardViewModel::class.java)
 
+        binding.recViewHabits.layoutManager = LinearLayoutManager(context)
+        binding.recViewHabits.adapter = habitAdapter
+
         observeViewModel()
 
         viewModel.refresh()
@@ -35,19 +48,23 @@ class DashboardFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.habitsLD.observe(viewLifecycleOwner) { habits ->
-            binding.txtHabitCount.text = "Jumlah habit: ${habits.size}"
+            habitAdapter.updateHabitList(habits)
 
             if (habits.isEmpty()) {
                 binding.txtEmptyMessage.visibility = View.VISIBLE
+                binding.recViewHabits.visibility = View.GONE
             } else {
                 binding.txtEmptyMessage.visibility = View.GONE
+                binding.recViewHabits.visibility = View.VISIBLE
             }
         }
 
-        viewModel.loadingLD.observe(viewLifecycleOwner) { isLoading ->
+        viewModel.loadingLD.observe(viewLifecycleOwner) {
+            // Belum dipakai di tahap ini.
         }
 
-        viewModel.errorLD.observe(viewLifecycleOwner) { isError ->
+        viewModel.errorLD.observe(viewLifecycleOwner) {
+            // Belum dipakai di tahap ini.
         }
     }
 }

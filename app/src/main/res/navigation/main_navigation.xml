@@ -8,28 +8,26 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.ferdinand.habittracker.view.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
+
         <action
-            android:id="@+id/actionLoginToDashboard 2"
-            app:destination="@id/dashboardFragment" />
+            android:id="@+id/action_loginFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.ferdinand.habittracker.view.DashboardFragment"
-        android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_dashboard" >
-        <action
-            android:id="@+id/actionDashboardToCreateHabit"
-            app:destination="@id/createHabitFragment" />
-    </fragment>
+        android:label="DashboardFragment"
+        tools:layout="@layout/fragment_dashboard" />
+
     <fragment
         android:id="@+id/createHabitFragment"
         android:name="com.ferdinand.habittracker.view.CreateHabitFragment"
-        android:label="fragment_create_habit"
-        tools:layout="@layout/fragment_create_habit" >
-        <action
-            android:id="@+id/actionCreateHabitToDashboard"
-            app:destination="@id/dashboardFragment" />
-    </fragment>
+        android:label="CreateHabitFragment"
+        tools:layout="@layout/fragment_create_habit" />
+
 </navigation>

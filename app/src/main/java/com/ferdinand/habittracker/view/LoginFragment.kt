@@ -41,7 +41,7 @@ class LoginFragment : Fragment() {
 
         if (username == validUsername && password == validPassword) {
             binding.txtError.visibility = View.GONE
-            view.findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+            view.findNavController().navigate(R.id.action_login_to_dashboard)
         } else {
             binding.txtError.visibility = View.VISIBLE
         }

@@ -69,7 +69,7 @@ class HabitAdapter(
         }
     }
 
-    fun updateHabitList(newHabitList: ArrayList<Habit>) {
+    fun updateHabitList(newHabitList: List<Habit>) {
         habitList.clear()
         habitList.addAll(newHabitList)
         notifyDataSetChanged()

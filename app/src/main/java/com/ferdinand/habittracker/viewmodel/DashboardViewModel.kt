@@ -1,37 +1,40 @@
 package com.ferdinand.habittracker.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.ferdinand.habittracker.model.Habit
-import com.ferdinand.habittracker.util.FileHelper
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.ferdinand.habittracker.util.buildDb
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class DashboardViewModel(application: Application) : AndroidViewModel(application) {
+class DashboardViewModel(application: Application) :
+    AndroidViewModel(application), CoroutineScope {
 
-    val habitsLD = MutableLiveData<ArrayList<Habit>>()
+    val habitsLD = MutableLiveData<List<Habit>>()
     val loadingLD = MutableLiveData<Boolean>()
     val errorLD = MutableLiveData<Boolean>()
 
-    private val habits = arrayListOf<Habit>()
-    private var nextId = 1
+    // dipakai EditHabitFragment untuk load 1 habit by id (lihat Week 9 "The ViewModel")
+    val habitLD = MutableLiveData<Habit>()
 
-    private val fileHelper = FileHelper(getApplication())
-    private val gson = Gson()
-
-    init {
-        loadHabitsFromFile()
-    }
+    private var job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = job + Dispatchers.IO
 
     fun refresh() {
-        loadingLD.value = true
-        errorLD.value = false
+        loadingLD.postValue(true)
+        errorLD.postValue(false)
 
-        habitsLD.value = ArrayList(habits)
-
-        loadingLD.value = false
+        launch {
+            val db = buildDb(getApplication())
+            val habits = db.habitDao().selectAllHabit()
+            habitsLD.postValue(habits)
+            loadingLD.postValue(false)
+        }
     }
 
     fun addHabit(
@@ -41,89 +44,63 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         unit: String,
         iconName: String
     ) {
-        val newHabit = Habit(
-            id = nextId,
-            name = name,
-            description = description,
-            goal = goal,
-            unit = unit,
-            currentProgress = 0,
-            iconName = iconName
-        )
+        launch {
+            val db = buildDb(getApplication())
 
-        nextId += 1
-        habits.add(newHabit)
+            val newHabit = Habit(
+                name = name,
+                description = description,
+                goal = goal,
+                unit = unit,
+                currentProgress = 0,
+                iconName = iconName
+            )
 
-        saveHabitsToFile()
-        habitsLD.value = ArrayList(habits)
+            db.habitDao().insertAll(newHabit)
+            habitsLD.postValue(db.habitDao().selectAllHabit())
+        }
     }
 
     fun increaseProgress(habit: Habit) {
-        val selectedHabit = habits.find { it.id == habit.id }
+        launch {
+            val db = buildDb(getApplication())
 
-        if (selectedHabit != null) {
-            if (selectedHabit.currentProgress < selectedHabit.goal) {
-                selectedHabit.currentProgress += 1
-                saveHabitsToFile()
+            if (habit.currentProgress < habit.goal) {
+                habit.currentProgress += 1
+                db.habitDao().updateHabit(habit)
             }
-        }
 
-        habitsLD.value = ArrayList(habits)
+            habitsLD.postValue(db.habitDao().selectAllHabit())
+        }
     }
 
     fun decreaseProgress(habit: Habit) {
-        val selectedHabit = habits.find { it.id == habit.id }
+        launch {
+            val db = buildDb(getApplication())
 
-        if (selectedHabit != null) {
-            if (selectedHabit.currentProgress > 0) {
-                selectedHabit.currentProgress -= 1
-                saveHabitsToFile()
+            if (habit.currentProgress > 0) {
+                habit.currentProgress -= 1
+                db.habitDao().updateHabit(habit)
             }
-        }
 
-        habitsLD.value = ArrayList(habits)
+            habitsLD.postValue(db.habitDao().selectAllHabit())
+        }
     }
 
-    private fun saveHabitsToFile() {
-        val jsonString = gson.toJson(habits)
-        fileHelper.writeToFile(jsonString)
-
-        Log.d("habit_file_write", jsonString)
-        Log.d("habit_file_path", fileHelper.getFilePath())
+    // dipanggil oleh EditHabitFragment untuk ambil 1 data habit berdasarkan id
+    // (Week 9 "The ViewModel" -> fetch function)
+    fun fetchHabit(id: Int) {
+        launch {
+            val db = buildDb(getApplication())
+            habitLD.postValue(db.habitDao().selectHabit(id))
+        }
     }
 
-    private fun loadHabitsFromFile() {
-        val jsonString = fileHelper.readFromFile()
-
-        if (jsonString.isEmpty()) {
-            habits.clear()
-            nextId = 1
-            habitsLD.value = ArrayList(habits)
-            return
-        }
-
-        try {
-            val sType = object : TypeToken<ArrayList<Habit>>() {}.type
-            val savedHabits = gson.fromJson<ArrayList<Habit>>(jsonString, sType)
-
-            habits.clear()
-
-            if (savedHabits != null) {
-                habits.addAll(savedHabits)
-            }
-
-            nextId = if (habits.isEmpty()) {
-                1
-            } else {
-                habits.maxOf { it.id } + 1
-            }
-
-            habitsLD.value = ArrayList(habits)
-
-            Log.d("habit_file_read", habits.toString())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            errorLD.value = true
+    fun updateHabit(habit: Habit) {
+        launch {
+            val db = buildDb(getApplication())
+            db.habitDao().updateHabit(habit)
+            habitsLD.postValue(db.habitDao().selectAllHabit())
         }
     }
 }

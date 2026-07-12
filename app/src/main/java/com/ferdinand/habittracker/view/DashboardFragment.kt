@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ferdinand.habittracker.R
 import com.ferdinand.habittracker.databinding.FragmentDashboardBinding
 import com.ferdinand.habittracker.viewmodel.DashboardViewModel
+import kotlinx.coroutines.launch
 
 class DashboardFragment : Fragment() {
 
@@ -24,6 +25,10 @@ class DashboardFragment : Fragment() {
         },
         onMinusClick = { habit ->
             viewModel.decreaseProgress(habit)
+        },
+        onTitleClick = { habitId ->
+            //val action = DashboardFragmentDirections.actionDashboardToEditHabit(habitId)
+            //view?.findNavController()?.navigate(action)
         }
     )
 
@@ -50,6 +55,11 @@ class DashboardFragment : Fragment() {
 
         observeViewModel()
 
+        viewModel.refresh()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.refresh()
     }
 

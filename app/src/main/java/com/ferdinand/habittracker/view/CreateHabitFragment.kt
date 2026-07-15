@@ -16,12 +16,20 @@ class CreateHabitFragment : Fragment() {
     private lateinit var binding: FragmentCreateHabitBinding
     private lateinit var viewModel: DashboardViewModel
 
-    private val iconOptions = arrayOf(
+    private val iconLabels = arrayOf(
         "Water",
         "Exercise",
         "Book",
         "Meditation",
         "Other"
+    )
+
+    private val iconEmojis = arrayOf(
+        "💧",
+        "🏃",
+        "📚",
+        "🧘",
+        "⭐"
     )
 
     override fun onCreateView(
@@ -51,7 +59,7 @@ class CreateHabitFragment : Fragment() {
         val spinnerAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            iconOptions
+            iconLabels
         )
 
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -64,7 +72,8 @@ class CreateHabitFragment : Fragment() {
         val description = binding.txtDescription.text.toString().trim()
         val goalText = binding.txtGoal.text.toString().trim()
         val unit = binding.txtUnit.text.toString().trim()
-        val iconName = binding.spinnerIcon.selectedItem.toString()
+        val selectedPosition = binding.spinnerIcon.selectedItemPosition
+        val iconName = iconEmojis[selectedPosition]
 
         val goal = goalText.toIntOrNull()
 

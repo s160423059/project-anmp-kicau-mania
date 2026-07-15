@@ -27,8 +27,8 @@ class DashboardFragment : Fragment() {
             viewModel.decreaseProgress(habit)
         },
         onTitleClick = { habitId ->
-            //val action = DashboardFragmentDirections.actionDashboardToEditHabit(habitId)
-            //view?.findNavController()?.navigate(action)
+            val action = DashboardFragmentDirections.actionDashboardToEditHabit(habitId)
+            view?.findNavController()?.navigate(action)
         }
     )
 

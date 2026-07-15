@@ -8,3 +8,7 @@ interface HabitCardListener {
     fun onMinusClick(habit: Habit)
     fun onTitleClick(v: View)
 }
+
+interface EditHabitListener {
+    fun onSaveClick(v: View)
+}

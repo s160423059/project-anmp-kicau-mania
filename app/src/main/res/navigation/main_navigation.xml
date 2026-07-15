@@ -29,6 +29,11 @@
             android:id="@+id/action_dashboard_to_create_habit"
             app:destination="@id/createHabitFragment" />
 
+        <!-- BARU: action ke Edit Habit -->
+        <action
+            android:id="@+id/action_dashboard_to_edit_habit"
+            app:destination="@id/editHabitFragment" />
+
     </fragment>
 
     <fragment
@@ -36,5 +41,18 @@
         android:name="com.ferdinand.habittracker.view.CreateHabitFragment"
         android:label="CreateHabitFragment"
         tools:layout="@layout/fragment_create_habit" />
+
+    <!-- BARU: destination Edit Habit dengan argument habitId -->
+    <fragment
+        android:id="@+id/editHabitFragment"
+        android:name="com.ferdinand.habittracker.view.EditHabitFragment"
+        android:label="EditHabitFragment"
+        tools:layout="@layout/fragment_edit_habit">
+
+        <argument
+            android:name="habitId"
+            app:argType="integer" />
+
+    </fragment>
 
 </navigation>

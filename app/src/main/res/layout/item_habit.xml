@@ -30,7 +30,9 @@
                 android:layout_height="44dp"
                 android:gravity="center"
                 android:text="@{habit.iconName}"
-                android:textSize="24sp"
+                android:textSize="20sp"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:background="#F1E9FF"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
